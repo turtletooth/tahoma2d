@@ -133,6 +133,15 @@ void TXshLevelColumn::loadData(TIStream &is) {
           TXshLevel *xshLevel = dynamic_cast<TXshLevel *>(p);
           if (xshLevel) {
             int fidNumber = fid.getNumber();
+            // Filename is in sequence format but used as single image file.
+            // Convert level to a sequenced level using the perceived frame from
+            // the filename.
+            if (fidNumber == TFrameId::NO_FRAME &&
+                xshLevel->getPath().getDots() == ".." &&
+                !xshLevel->getPath().isLevelName()) {
+              fid       = xshLevel->getPath().getFrame();
+              fidNumber = fid.getNumber();
+            }
             for (int i = 0; i < rowCount; i++) {
               TXshCell cell(xshLevel, fid);
               setCell(row++, cell);
